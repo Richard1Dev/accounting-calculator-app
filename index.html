@@ -3,53 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AccuCalc | Professional Accounting Tools</title>
+    <title>Loan Calculator</title>
     <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-    <header>
-        <h1>AccuCalc</h1>
-        <nav>
-            <button class="tab-btn active" data-target="vat-calc">VAT Calculator</button>
-            <button class="tab-btn" data-target="be-calc">Break-Even</button>
-        </nav>
-    </header>
+    <div class="calculator-container">
+        <h1>Loan Calculator</h1>
+        <label for="principal">Loan Amount:</label>
+        <input type="number" id="principal" placeholder="Enter loan amount" />
+        
+        <label for="interest">Annual Interest Rate (%):</label>
+        <input type="number" id="interest" placeholder="Enter interest rate" />
+        
+        <label for="years">Loan Term (years):</label>
+        <input type="number" id="years" placeholder="Enter loan term in years" />
 
-    <main>
-        <section id="vat-calc" class="calc-section">
-            <h2>VAT / Sales Tax</h2>
-            <div class="input-group">
-                <label>Amount</label>
-                <input type="number" id="vat-amount" placeholder="0.00" step="0.01">
-            </div>
-            <div class="input-group">
-                <label>Tax Rate (%)</label>
-                <input type="number" id="vat-rate" value="20">
-            </div>
-            <button id="btn-calc-vat">Calculate</button>
-            <div class="result-box" id="vat-result">
-                </div>
-        </section>
+        <button onclick="calculateLoan()">Calculate</button>
 
-        <section id="be-calc" class="calc-section hidden">
-            <h2>Break-Even Analysis</h2>
-            <div class="input-group">
-                <label>Fixed Costs</label>
-                <input type="number" id="be-fixed" placeholder="e.g. Rent">
-            </div>
-            <div class="input-group">
-                <label>Price per Unit</label>
-                <input type="number" id="be-price">
-            </div>
-            <div class="input-group">
-                <label>Variable Cost per Unit</label>
-                <input type="number" id="be-variable">
-            </div>
-            <button id="btn-calc-be">Find Break-Even</button>
-            <div class="result-box" id="be-result"></div>
-        </section>
-    </main>
+        <h3 id="result"></h3>
+    </div>
 
-    <script type="module" src="scripts/main.js"></script>
+    <script src="scripts/main.js"></script>
 </body>
 </html>
