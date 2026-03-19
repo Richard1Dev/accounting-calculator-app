@@ -3,26 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loan Calculator</title>
+    <title>AccuCalc | Accountant's Toolkit</title>
     <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-    <div class="calculator-container">
-        <h1>Loan Calculator</h1>
-        <label for="principal">Loan Amount:</label>
-        <input type="number" id="principal" placeholder="Enter loan amount" />
-        
-        <label for="interest">Annual Interest Rate (%):</label>
-        <input type="number" id="interest" placeholder="Enter interest rate" />
-        
-        <label for="years">Loan Term (years):</label>
-        <input type="number" id="years" placeholder="Enter loan term in years" />
+    <div class="app-container">
+        <header>
+            <h1>AccuCalc</h1>
+            <p>Professional Accounting Utilities</p>
+        </header>
 
-        <button onclick="calculateLoan()">Calculate</button>
+        <nav class="tab-nav">
+            <button class="tab-link active" onclick="openTab(event, 'loan-tab')">Loan Calc</button>
+            <button class="tab-link" onclick="openTab(event, 'vat-tab')">VAT/Tax</button>
+        </nav>
 
-        <h3 id="result"></h3>
+        <main class="calculator-card">
+            <section id="loan-tab" class="tab-content active">
+                <h2>Loan Payment</h2>
+                <div class="input-group">
+                    <label>Principal Amount ($)</label>
+                    <input type="number" id="loan-principal" placeholder="50000" step="100">
+                </div>
+                <div class="input-group">
+                    <label>Annual Interest (%)</label>
+                    <input type="number" id="loan-interest" placeholder="5.5" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label>Term (Years)</label>
+                    <input type="number" id="loan-years" placeholder="5">
+                </div>
+                <button id="btn-loan">Calculate Payment</button>
+                <div class="result-display" id="loan-result">Result: --</div>
+            </section>
+
+            <section id="vat-tab" class="tab-content">
+                <h2>VAT / Sales Tax</h2>
+                <div class="input-group">
+                    <label>Amount ($)</label>
+                    <input type="number" id="vat-amount" placeholder="100.00" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>Tax Rate (%)</label>
+                    <input type="number" id="vat-rate" value="20">
+                </div>
+                <div class="button-row">
+                    <button id="btn-vat-add">Add Tax</button>
+                    <button id="btn-vat-remove" class="secondary">Remove Tax</button>
+                </div>
+                <div class="result-display" id="vat-result">Result: --</div>
+            </section>
+        </main>
+
+        <aside class="audit-trail">
+            <h3>Digital Tape (History)</h3>
+            <ul id="history-list"></ul>
+            <button id="btn-clear-history">Clear Tape</button>
+        </aside>
     </div>
 
-    <script src="scripts/main.js"></script>
+    <script type="module" src="scripts/main.js"></script>
 </body>
 </html>
