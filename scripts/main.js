@@ -1,64 +1,81 @@
-import { FinanceLogic } from './calculators.js';
-
-// --- Tab Switching ---
-window.openTab = (evt, tabName) => {
-    document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".tab-link").forEach(l => l.classList.remove("active"));
+// --- Tab Switching Function ---
+function openTab(evt, tabName) {
+    const contents = document.getElementsByClassName("tab-content");
+    for (let i = 0; i < contents.length; i++) {
+        contents[i].classList.remove("active");
+    }
+    const links = document.getElementsByClassName("tab-link");
+    for (let i = 0; i < links.length; i++) {
+        links[i].classList.remove("active");
+    }
     document.getElementById(tabName).classList.add("active");
     evt.currentTarget.classList.add("active");
-};
+}
 
-// --- Audit Trail Logging ---
-const historyList = document.querySelector('#history-list');
-const log = (msg) => {
+// --- Digital Tape / History Logic ---
+const historyList = document.getElementById('history-list');
+function logToTape(msg) {
     const li = document.createElement('li');
-    li.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-    historyList.prepend(li);
-};
+    li.textContent = `[${new Date().toLocaleTimeString('en-GB')}] ${msg}`;
+    if (historyList) historyList.prepend(li);
+}
 
-// --- Loan Event ---
-document.querySelector('#btn-loan').addEventListener('click', () => {
-    const p = parseFloat(document.querySelector('#loan-principal').value);
-    const r = parseFloat(document.querySelector('#loan-interest').value);
-    const y = parseFloat(document.querySelector('#loan-years').value);
+// --- Event Listeners ---
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // Loan Amortisation Event
+    const btnLoan = document.getElementById('btn-loan');
+    if (btnLoan) {
+        btnLoan.addEventListener('click', () => {
+            const p = parseFloat(document.getElementById('loan-principal').value);
+            const r = parseFloat(document.getElementById('loan-interest').value);
+            const y = parseFloat(document.getElementById('loan-years').value);
 
-    if (isNaN(p) || isNaN(r) || isNaN(y)) return;
+            if (isNaN(p) || isNaN(r) || isNaN(y)) return alert("Please enter valid numbers.");
 
-    const { monthlyPayment, schedule } = FinanceLogic.generateAmortisation(p, r, y);
-    
-    document.querySelector('#loan-result').innerHTML = `Monthly Payment: <strong>$${monthlyPayment}</strong>`;
-    
-    const tbody = document.querySelector('#amortisation-table tbody');
-    tbody.innerHTML = ''; // Clear old data
-    
-    schedule.forEach(row => {
-        const tr = `<tr>
-            <td>${row.month}</td>
-            <td>$${row.interest}</td>
-            <td>$${row.principal}</td>
-            <td>$${row.balance}</td>
-        </tr>`;
-        tbody.insertAdjacentHTML('beforeend', tr);
+            const result = FinanceLogic.generateAmortization(p, r, y);
+            document.getElementById('loan-result').innerHTML = `Monthly Payment: <strong>£${result.monthlyPayment}</strong>`;
+            
+            const tbody = document.querySelector('#amortization-table tbody');
+            tbody.innerHTML = ''; // Clear table
+            
+            result.schedule.forEach(row => {
+                const tr = `<tr>
+                    <td>${row.month}</td>
+                    <td>£${row.interest}</td>
+                    <td>£${row.principal}</td>
+                    <td>£${row.balance}</td>
+                </tr>`;
+                tbody.insertAdjacentHTML('beforeend', tr);
+            });
+            logToTape(`Loan: £${p} at ${r}% for ${y}y. Payment: £${result.monthlyPayment}`);
+        });
+    }
+
+    // VAT Event
+    document.getElementById('btn-vat-add').addEventListener('click', () => {
+        const amt = parseFloat(document.getElementById('calc-amount').value);
+        const rate = parseFloat(document.getElementById('calc-secondary').value);
+        if (isNaN(amt) || isNaN(rate)) return;
+
+        const res = FinanceLogic.addVAT(amt, rate);
+        document.getElementById('tax-result').innerHTML = `Total (Gross): £${res.total} (Tax: £${res.tax})`;
+        logToTape(`VAT: £${amt} + ${rate}% = £${res.total}`);
     });
 
-    log(`Loan: $${p} @ ${r}% for ${y}y. Payment: $${monthlyPayment}`);
-});
+    // Margin Event
+    document.getElementById('btn-margin').addEventListener('click', () => {
+        const cost = parseFloat(document.getElementById('calc-amount').value);
+        const rev = parseFloat(document.getElementById('calc-secondary').value);
+        if (isNaN(cost) || isNaN(rev)) return;
 
-// --- VAT/Margin Events ---
-document.querySelector('#btn-vat-add').addEventListener('click', () => {
-    const amt = parseFloat(document.querySelector('#calc-amount').value);
-    const rate = parseFloat(document.querySelector('#calc-secondary').value);
-    const res = FinanceLogic.addVAT(amt, rate);
-    document.querySelector('#tax-result').innerHTML = `Total (Gross): $${res.total} (Tax: $${res.tax})`;
-    log(`VAT: $${amt} + ${rate}% = $${res.total}`);
-});
+        const res = FinanceLogic.getMarginMarkup(cost, rev);
+        document.getElementById('tax-result').innerHTML = `Margin: ${res.margin}% | Markup: ${res.markup}%`;
+        logToTape(`Margin: Cost £${cost}, Rev £${rev} -> ${res.margin}%`);
+    });
 
-document.querySelector('#btn-margin').addEventListener('click', () => {
-    const cost = parseFloat(document.querySelector('#calc-amount').value);
-    const rev = parseFloat(document.querySelector('#calc-secondary').value);
-    const res = FinanceLogic.getMarginMarkup(cost, rev);
-    document.querySelector('#tax-result').innerHTML = `Margin: ${res.margin}% | Markup: ${res.markup}%`;
-    log(`Margin: Cost $${cost}, Rev $${rev} -> ${res.margin}%`);
+    // Clear History
+    document.getElementById('btn-clear-history').addEventListener('click', () => {
+        historyList.innerHTML = '';
+    });
 });
-
-document.querySelector('#btn-clear-history').addEventListener('click', () => historyList.innerHTML = '');

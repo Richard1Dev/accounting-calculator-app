@@ -1,11 +1,10 @@
-export const FinanceLogic = {
-    // VAT Addition
+// Global object to store math logic
+const FinanceLogic = {
     addVAT: (amount, rate) => {
         const tax = amount * (rate / 100);
         return { tax: tax.toFixed(2), total: (amount + tax).toFixed(2) };
     },
 
-    // Margin & Markup
     getMarginMarkup: (cost, revenue) => {
         const profit = revenue - cost;
         const margin = (profit / revenue) * 100;
@@ -17,8 +16,7 @@ export const FinanceLogic = {
         };
     },
 
-    // Amortisation Schedule
-    generateAmortisation: (principal, annualRate, years) => {
+    generateAmortization: (principal, annualRate, years) => {
         const monthlyRate = (annualRate / 100) / 12;
         const totalMonths = years * 12;
         const monthlyPayment = (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalMonths));

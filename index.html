@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,11 +10,11 @@
     <div class="app-container">
         <header>
             <h1>Accounting Calculator App</h1>
-            <p>Professional Accounting & Amortisation Suite</p>
+            <p>Professional Financial Tool Suite</p>
         </header>
 
         <nav class="tab-nav">
-            <button class="tab-link active" onclick="openTab(event, 'loan-tab')">Loan & Amortisation</button>
+            <button class="tab-link active" onclick="openTab(event, 'loan-tab')">Loan Amortisation</button>
             <button class="tab-link" onclick="openTab(event, 'tax-tab')">VAT & Margins</button>
         </nav>
 
@@ -23,7 +23,7 @@
                 <h2>Loan Amortisation</h2>
                 <div class="input-grid">
                     <div class="input-group">
-                        <label>Principal ($)</label>
+                        <label>Principal (£)</label>
                         <input type="number" id="loan-principal" value="10000">
                     </div>
                     <div class="input-group">
@@ -40,7 +40,7 @@
                 <div class="result-summary" id="loan-result">Monthly Payment: --</div>
                 
                 <div class="table-container">
-                    <table id="amortisation-table">
+                    <table id="amortization-table">
                         <thead>
                             <tr>
                                 <th>Month</th>
@@ -49,8 +49,7 @@
                                 <th>Balance</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </section>
@@ -58,16 +57,16 @@
             <section id="tax-tab" class="tab-content">
                 <h2>VAT & Profit Margins</h2>
                 <div class="input-group">
-                    <label>Amount / Cost ($)</label>
+                    <label>Amount / Cost (£)</label>
                     <input type="number" id="calc-amount" placeholder="0.00">
                 </div>
                 <div class="input-group">
-                    <label>Rate / Revenue ($)</label>
+                    <label>Rate / Revenue (£)</label>
                     <input type="number" id="calc-secondary" placeholder="20% or Sales Price">
                 </div>
                 <div class="button-row">
                     <button id="btn-vat-add">Add VAT</button>
-                    <button id="btn-margin" class="secondary">Calc Margin</button>
+                    <button id="btn-margin" class="secondary">Calculate Margin</button>
                 </div>
                 <div class="result-summary" id="tax-result">Result: --</div>
             </section>
@@ -75,13 +74,14 @@
 
         <aside class="audit-trail">
             <div class="trail-header">
-                <h3>Digital Tape</h3>
-                <button id="btn-clear-history">Clear</button>
+                <h3>Digital Tape (Audit History)</h3>
+                <button id="btn-clear-history">Clear History</button>
             </div>
             <ul id="history-list"></ul>
         </aside>
     </div>
 
-    <script type="module" src="scripts/main.js"></script>
+    <script src="scripts/calculators.js"></script>
+    <script src="scripts/main.js"></script>
 </body>
 </html>
