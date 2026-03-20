@@ -4,23 +4,145 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accounting Calculator App</title>
-    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #27ae60;
+            --border: #bdc3c7;
+            --bg: #f5f6fa;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --tab-inactive: #dcdde1;
+        }
+
+        /* Dark Mode Variables */
+        [data-theme="dark"] {
+            --primary: #ecf0f1;
+            --accent: #2ecc71;
+            --border: #4b4b4b;
+            --bg: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text: #f5f6fa;
+            --tab-inactive: #3d3d3d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0; padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .app-container { max-width: 900px; margin: 0 auto; }
+
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 30px; 
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        /* Theme Toggle */
+        #theme-toggle {
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 20px;
+            border: 2px solid var(--primary);
+            background: transparent;
+            color: var(--text);
+            font-weight: bold;
+        }
+
+        /* High Contrast Tabs */
+        .tab-nav { display: flex; gap: 2px; }
+        .tab-link {
+            flex: 1; padding: 15px; 
+            border: 2px solid var(--primary);
+            border-bottom: none;
+            background: var(--tab-inactive); 
+            cursor: pointer; 
+            border-radius: 10px 10px 0 0;
+            font-size: 1rem;
+            color: var(--text);
+            font-weight: bold;
+        }
+        .tab-link.active { 
+            background: var(--card-bg); 
+            border-bottom: 2px solid var(--card-bg);
+            z-index: 2;
+            position: relative;
+            color: var(--accent);
+        }
+
+        .calculator-card {
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+            border: 2px solid var(--primary);
+            margin-top: -2px; /* Pull up to join with active tab border */
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; color: var(--accent); }
+        input {
+            width: 100%; padding: 12px; border: 2px solid var(--border);
+            border-radius: 6px; font-family: 'Courier New', monospace; font-size: 1.1rem; 
+            box-sizing: border-box; background: var(--card-bg); color: var(--text);
+        }
+
+        button {
+            width: 100%; padding: 15px; background: var(--primary); color: var(--bg);
+            border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem;
+            text-transform: uppercase;
+        }
+        button:hover { filter: contrast(1.5); }
+        button.secondary { background: var(--accent); color: white; }
+
+        .result-summary {
+            margin: 20px 0; padding: 20px; background: rgba(0,0,0,0.05);
+            border-left: 10px solid var(--accent); font-family: monospace; font-size: 1.2rem;
+        }
+
+        .table-container { max-height: 400px; overflow-y: auto; margin-top: 20px; border: 2px solid var(--border); border-radius: 6px; }
+        table { width: 100%; border-collapse: collapse; font-family: monospace; font-size: 0.9rem; }
+        th { background: var(--primary); color: var(--bg); position: sticky; top: 0; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid var(--border); }
+        tr:nth-child(even) { background: rgba(0,0,0,0.02); }
+
+        .audit-trail { margin-top: 40px; background: var(--primary); color: var(--bg); padding: 20px; border-radius: 10px; }
+        .trail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--accent); padding-bottom: 5px; }
+        #history-list { list-style: none; padding: 0; font-family: monospace; font-size: 0.85rem; line-height: 1.8; }
+        #btn-clear-history { width: auto; padding: 5px 15px; background: #e74c3c; color: white; font-size: 0.8rem; border-radius: 4px; }
+    </style>
 </head>
-<body>
+<body data-theme="light">
+
     <div class="app-container">
         <header>
-            <h1>Accounting Calculator App</h1>
-            <p>Professional Financial Tool Suite</p>
+            <div>
+                <h1>Accounting Calculator App</h1>
+                <p>Version 1.1 | Financial Utilities</p>
+            </div>
+            <button id="theme-toggle">Toggle Dark Mode</button>
         </header>
 
         <nav class="tab-nav">
-            <button class="tab-link active" onclick="openTab(event, 'loan-tab')">Loan Amortisation</button>
-            <button class="tab-link" onclick="openTab(event, 'tax-tab')">VAT & Margins</button>
+            <button class="tab-link active" onclick="openTab(event, 'loan-tab')">Amortisation</button>
+            <button class="tab-link" onclick="openTab(event, 'vat-tab')">VAT Calc</button>
+            <button class="tab-link" onclick="openTab(event, 'margin-tab')">Margin/Markup</button>
         </nav>
 
         <main class="calculator-card">
             <section id="loan-tab" class="tab-content active">
-                <h2>Loan Amortisation</h2>
+                <h2>Loan Amortisation Schedule</h2>
                 <div class="input-grid">
                     <div class="input-group">
                         <label>Principal (£)</label>
@@ -28,60 +150,162 @@
                     </div>
                     <div class="input-group">
                         <label>Annual Interest (%)</label>
-                        <input type="number" id="loan-interest" value="5" step="0.1">
+                        <input type="number" id="loan-interest" value="5.0" step="0.1">
                     </div>
                     <div class="input-group">
                         <label>Term (Years)</label>
                         <input type="number" id="loan-years" value="5">
                     </div>
                 </div>
-                <button id="btn-loan">Generate Schedule</button>
-                
-                <div class="result-summary" id="loan-result">Monthly Payment: --</div>
-                
+                <button id="btn-loan">Generate Repayment Schedule</button>
+                <div class="result-summary" id="loan-result">Monthly Repayment: --</div>
                 <div class="table-container">
                     <table id="amortization-table">
                         <thead>
-                            <tr>
-                                <th>Month</th>
-                                <th>Interest</th>
-                                <th>Principal</th>
-                                <th>Balance</th>
-                            </tr>
+                            <tr><th>Month</th><th>Interest</th><th>Principal</th><th>Remaining Balance</th></tr>
                         </thead>
                         <tbody></tbody>
                     </table>
                 </div>
             </section>
 
-            <section id="tax-tab" class="tab-content">
-                <h2>VAT & Profit Margins</h2>
-                <div class="input-group">
-                    <label>Amount / Cost (£)</label>
-                    <input type="number" id="calc-amount" placeholder="0.00">
+            <section id="vat-tab" class="tab-content">
+                <h2>VAT Calculator</h2>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>Net Amount (£)</label>
+                        <input type="number" id="vat-net" placeholder="100.00">
+                    </div>
+                    <div class="input-group">
+                        <label>VAT Rate (%)</label>
+                        <input type="number" id="vat-rate" value="20">
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label>Rate / Revenue (£)</label>
-                    <input type="number" id="calc-secondary" placeholder="20% or Sales Price">
+                <button id="btn-vat-add" class="secondary">Add VAT to Net</button>
+                <div class="result-summary" id="vat-result">Gross Total: --</div>
+            </section>
+
+            <section id="margin-tab" class="tab-content">
+                <h2>Profit Margin & Markup</h2>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>Cost of Goods (£)</label>
+                        <input type="number" id="margin-cost" placeholder="50.00">
+                    </div>
+                    <div class="input-group">
+                        <label>Revenue / Sales Price (£)</label>
+                        <input type="number" id="margin-rev" placeholder="100.00">
+                    </div>
                 </div>
-                <div class="button-row">
-                    <button id="btn-vat-add">Add VAT</button>
-                    <button id="btn-margin" class="secondary">Calculate Margin</button>
-                </div>
-                <div class="result-summary" id="tax-result">Result: --</div>
+                <button id="btn-margin">Analyse Profitability</button>
+                <div class="result-summary" id="margin-result">Margin: -- | Markup: --</div>
             </section>
         </main>
 
         <aside class="audit-trail">
             <div class="trail-header">
-                <h3>Digital Tape (Audit History)</h3>
+                <h3>Digital Tape (Audit Trail)</h3>
                 <button id="btn-clear-history">Clear History</button>
             </div>
             <ul id="history-list"></ul>
         </aside>
     </div>
 
-    <script src="scripts/calculator.js"></script>
-    <script src="scripts/main.js"></script>
+    <script>
+        // --- Theme Toggle ---
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', newTheme);
+        });
+
+        // --- Tab Switching ---
+        function openTab(evt, tabName) {
+            const contents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
+            const links = document.getElementsByClassName("tab-link");
+            for (let i = 0; i < links.length; i++) links[i].classList.remove("active");
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        // --- Calculation Functions ---
+        const Finance = {
+            vat: (net, rate) => {
+                const tax = net * (rate / 100);
+                return { tax: tax.toFixed(2), gross: (net + tax).toFixed(2) };
+            },
+            profit: (cost, rev) => {
+                const p = rev - cost;
+                return {
+                    margin: ((p / rev) * 100).toFixed(2),
+                    markup: ((p / cost) * 100).toFixed(2)
+                };
+            },
+            amortise: (p, r, y) => {
+                const monthlyRate = (r / 100) / 12;
+                const months = y * 12;
+                const payment = (p * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months));
+                let balance = p;
+                const schedule = [];
+                for (let i = 1; i <= months; i++) {
+                    const interest = balance * monthlyRate;
+                    const principal = payment - interest;
+                    balance -= principal;
+                    schedule.push({ i, interest: interest.toFixed(2), principal: principal.toFixed(2), balance: Math.max(0, balance).toFixed(2) });
+                }
+                return { payment: payment.toFixed(2), schedule };
+            }
+        };
+
+        // --- UI & Events ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const historyList = document.getElementById('history-list');
+            const log = (msg) => {
+                const li = document.createElement('li');
+                li.textContent = `[${new Date().toLocaleTimeString('en-GB')}] ${msg}`;
+                historyList.prepend(li);
+            };
+
+            // Loan Logic
+            document.getElementById('btn-loan').addEventListener('click', () => {
+                const p = parseFloat(document.getElementById('loan-principal').value);
+                const r = parseFloat(document.getElementById('loan-interest').value);
+                const y = parseFloat(document.getElementById('loan-years').value);
+                if (isNaN(p) || isNaN(r) || isNaN(y)) return;
+
+                const res = Finance.amortise(p, r, y);
+                document.getElementById('loan-result').innerHTML = `Monthly Payment: <strong>£${res.payment}</strong>`;
+                const tbody = document.querySelector('#amortization-table tbody');
+                tbody.innerHTML = res.schedule.map(row => 
+                    `<tr><td>${row.i}</td><td>£${row.interest}</td><td>£${row.principal}</td><td>£${row.balance}</td></tr>`
+                ).join('');
+                log(`Loan: £${p} @ ${r}% for ${y}yrs. Mnthly: £${res.payment}`);
+            });
+
+            // VAT Logic
+            document.getElementById('btn-vat-add').addEventListener('click', () => {
+                const net = parseFloat(document.getElementById('vat-net').value);
+                const rate = parseFloat(document.getElementById('vat-rate').value);
+                if (isNaN(net)) return;
+                const res = Finance.vat(net, rate);
+                document.getElementById('vat-result').innerHTML = `Gross Total: <strong>£${res.gross}</strong> (VAT: £${res.tax})`;
+                log(`VAT: Net £${net} + ${rate}% = Gross £${res.gross}`);
+            });
+
+            // Margin Logic
+            document.getElementById('btn-margin').addEventListener('click', () => {
+                const cost = parseFloat(document.getElementById('margin-cost').value);
+                const rev = parseFloat(document.getElementById('margin-rev').value);
+                if (isNaN(cost) || isNaN(rev)) return;
+                const res = Finance.profit(cost, rev);
+                document.getElementById('margin-result').innerHTML = `Margin: <strong>${res.margin}%</strong> | Markup: <strong>${res.markup}%</strong>`;
+                log(`Profit: Cost £${cost}, Rev £${rev} -> Margin ${res.margin}%`);
+            });
+
+            document.getElementById('btn-clear-history').addEventListener('click', () => historyList.innerHTML = '');
+        });
+    </script>
 </body>
 </html>
