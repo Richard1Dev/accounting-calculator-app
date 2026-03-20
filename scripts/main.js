@@ -1,18 +1,14 @@
-import { Loan, VAT } from './calculators.js';
+import { FinanceLogic } from './calculators.js';
 
-// --- Tab Logic ---
+// --- Tab Switching ---
 window.openTab = (evt, tabName) => {
-    const contents = document.getElementsByClassName("tab-content");
-    for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
-    
-    const links = document.getElementsByClassName("tab-link");
-    for (let i = 0; i < links.length; i++) links[i].classList.remove("active");
-
+    document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".tab-link").forEach(l => l.classList.remove("active"));
     document.getElementById(tabName).classList.add("active");
     evt.currentTarget.classList.add("active");
 };
 
-// --- Audit Trail ---
+// --- Audit Trail Logging ---
 const historyList = document.querySelector('#history-list');
 const log = (msg) => {
     const li = document.createElement('li');
@@ -20,40 +16,49 @@ const log = (msg) => {
     historyList.prepend(li);
 };
 
-// --- Loan Events ---
+// --- Loan Event ---
 document.querySelector('#btn-loan').addEventListener('click', () => {
     const p = parseFloat(document.querySelector('#loan-principal').value);
     const r = parseFloat(document.querySelector('#loan-interest').value);
     const y = parseFloat(document.querySelector('#loan-years').value);
 
-    if (isNaN(p) || isNaN(r) || isNaN(y)) return alert("Fill all fields");
+    if (isNaN(p) || isNaN(r) || isNaN(y)) return;
 
-    const result = Loan.calculateMonthly(p, r, y);
-    document.querySelector('#loan-result').innerText = `Monthly: $${result}`;
-    log(`Loan: $${p} @ ${r}% / ${y}yrs -> $${result}/mo`);
+    const { monthlyPayment, schedule } = FinanceLogic.generateAmortisation(p, r, y);
+    
+    document.querySelector('#loan-result').innerHTML = `Monthly Payment: <strong>$${monthlyPayment}</strong>`;
+    
+    const tbody = document.querySelector('#amortisation-table tbody');
+    tbody.innerHTML = ''; // Clear old data
+    
+    schedule.forEach(row => {
+        const tr = `<tr>
+            <td>${row.month}</td>
+            <td>$${row.interest}</td>
+            <td>$${row.principal}</td>
+            <td>$${row.balance}</td>
+        </tr>`;
+        tbody.insertAdjacentHTML('beforeend', tr);
+    });
+
+    log(`Loan: $${p} @ ${r}% for ${y}y. Payment: $${monthlyPayment}`);
 });
 
-// --- VAT Events ---
+// --- VAT/Margin Events ---
 document.querySelector('#btn-vat-add').addEventListener('click', () => {
-    const amt = parseFloat(document.querySelector('#vat-amount').value);
-    const rate = parseFloat(document.querySelector('#vat-rate').value);
-    if (isNaN(amt)) return;
-
-    const res = VAT.add(amt, rate);
-    document.querySelector('#vat-result').innerText = `Total: $${res.total}`;
-    log(`VAT Add: $${amt} + ${rate}% = $${res.total}`);
+    const amt = parseFloat(document.querySelector('#calc-amount').value);
+    const rate = parseFloat(document.querySelector('#calc-secondary').value);
+    const res = FinanceLogic.addVAT(amt, rate);
+    document.querySelector('#tax-result').innerHTML = `Total (Gross): $${res.total} (Tax: $${res.tax})`;
+    log(`VAT: $${amt} + ${rate}% = $${res.total}`);
 });
 
-document.querySelector('#btn-vat-remove').addEventListener('click', () => {
-    const amt = parseFloat(document.querySelector('#vat-amount').value);
-    const rate = parseFloat(document.querySelector('#vat-rate').value);
-    if (isNaN(amt)) return;
-
-    const res = VAT.remove(amt, rate);
-    document.querySelector('#vat-result').innerText = `Net: $${res.net}`;
-    log(`VAT Sub: $${amt} minus ${rate}% = $${res.net}`);
+document.querySelector('#btn-margin').addEventListener('click', () => {
+    const cost = parseFloat(document.querySelector('#calc-amount').value);
+    const rev = parseFloat(document.querySelector('#calc-secondary').value);
+    const res = FinanceLogic.getMarginMarkup(cost, rev);
+    document.querySelector('#tax-result').innerHTML = `Margin: ${res.margin}% | Markup: ${res.markup}%`;
+    log(`Margin: Cost $${cost}, Rev $${rev} -> ${res.margin}%`);
 });
 
-document.querySelector('#btn-clear-history').addEventListener('click', () => {
-    historyList.innerHTML = '';
-});
+document.querySelector('#btn-clear-history').addEventListener('click', () => historyList.innerHTML = '');

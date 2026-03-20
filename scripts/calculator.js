@@ -1,22 +1,43 @@
-// Pure math logic
-export const Loan = {
-    calculateMonthly: (p, r, y) => {
-        const monthlyRate = (r / 100) / 12;
-        const totalPayments = y * 12;
-        const x = Math.pow(1 + monthlyRate, totalPayments);
-        const monthly = (p * x * monthlyRate) / (x - 1);
-        return isFinite(monthly) ? monthly.toFixed(2) : "0.00";
-    }
-};
-
-export const VAT = {
-    add: (amount, rate) => {
+export const FinanceLogic = {
+    // VAT Addition
+    addVAT: (amount, rate) => {
         const tax = amount * (rate / 100);
         return { tax: tax.toFixed(2), total: (amount + tax).toFixed(2) };
     },
-    remove: (amount, rate) => {
-        const net = amount / (1 + (rate / 100));
-        const tax = amount - net;
-        return { net: net.toFixed(2), tax: tax.toFixed(2) };
+
+    // Margin & Markup
+    getMarginMarkup: (cost, revenue) => {
+        const profit = revenue - cost;
+        const margin = (profit / revenue) * 100;
+        const markup = (profit / cost) * 100;
+        return {
+            profit: profit.toFixed(2),
+            margin: margin.toFixed(2),
+            markup: markup.toFixed(2)
+        };
+    },
+
+    // Amortisation Schedule
+    generateAmortisation: (principal, annualRate, years) => {
+        const monthlyRate = (annualRate / 100) / 12;
+        const totalMonths = years * 12;
+        const monthlyPayment = (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalMonths));
+        
+        let balance = principal;
+        const schedule = [];
+
+        for (let i = 1; i <= totalMonths; i++) {
+            const interestPayment = balance * monthlyRate;
+            const principalPayment = monthlyPayment - interestPayment;
+            balance -= principalPayment;
+            
+            schedule.push({
+                month: i,
+                interest: interestPayment.toFixed(2),
+                principal: principalPayment.toFixed(2),
+                balance: Math.max(0, balance).toFixed(2)
+            });
+        }
+        return { monthlyPayment: monthlyPayment.toFixed(2), schedule };
     }
 };
