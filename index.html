@@ -6,17 +6,6 @@
     <title>Accounting Calculator App</title>
     <style>
         :root {
-            --primary: #2c3e50;
-            --accent: #27ae60;
-            --border: #dcdde1;
-            --bg: #f5f6fa;
-            --card-bg: #ffffff;
-            --text: #2c3e50;
-            --tab-inactive: #e1e2e6;
-            --shadow: rgba(0, 0, 0, 0.08);
-        }
-
-        [data-theme="dark"] {
             --primary: #ecf0f1;
             --accent: #2ecc71;
             --border: #444;
@@ -27,8 +16,19 @@
             --shadow: rgba(0, 0, 0, 0.3);
         }
 
+        [data-theme="light"] {
+            --primary: #2c3e50;
+            --accent: #27ae60;
+            --border: #dcdde1;
+            --bg: #f5f6fa;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --tab-inactive: #e1e2e6;
+            --shadow: rgba(0, 0, 0, 0.08);
+        }
+
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0; padding: 40px 20px;
@@ -36,116 +36,79 @@
         }
 
         .app-container { 
-            max-width: 1100px; 
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 30px;
+            max-width: 1200px; margin: 0 auto;
+            display: grid; grid-template-columns: 1fr 320px; gap: 30px;
         }
 
-        header { 
-            grid-column: 1 / -1;
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 30px;
-        }
-
-        h1 { margin: 0; font-size: 1.8rem; letter-spacing: -0.5px; }
-
+        header { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        
         #theme-toggle {
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: var(--card-bg);
-            color: var(--text);
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: 0.2s;
+            padding: 10px 20px; cursor: pointer; border-radius: 8px;
+            border: 1px solid var(--border); background: var(--card-bg); color: var(--text);
+            font-size: 0.85rem; font-weight: 600;
         }
 
-        /* Sidebar Audit Trail */
         .sidebar { grid-column: 2; }
         .audit-trail { 
-            background: var(--card-bg); 
-            border: 1px solid var(--border); 
-            padding: 20px; 
-            border-radius: 12px;
-            position: sticky; top: 40px;
-            box-shadow: 0 4px 12px var(--shadow);
+            background: var(--card-bg); border: 1px solid var(--border); padding: 20px; 
+            border-radius: 12px; position: sticky; top: 40px; box-shadow: 0 4px 12px var(--shadow);
         }
         
-        .trail-header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 15px; border-bottom: 2px solid var(--accent); padding-bottom: 8px; 
-        }
-        
-        #history-list { list-style: none; padding: 0; font-family: 'Courier New', monospace; font-size: 0.8rem; }
-        #history-list li { padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text); opacity: 0.8; }
+        .trail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid var(--accent); padding-bottom: 8px; }
+        #history-list { list-style: none; padding: 0; font-family: 'Courier New', monospace; font-size: 0.8rem; overflow-wrap: break-word; }
+        #history-list li { padding: 8px 0; border-bottom: 1px solid var(--border); opacity: 0.8; }
 
-        /* Main Calculator UI */
         .main-content { grid-column: 1; }
-        .tab-nav { display: flex; gap: 8px; margin-bottom: -1px; }
+        .tab-nav { display: flex; gap: 5px; margin-bottom: -1px; flex-wrap: wrap; }
         .tab-link {
-            padding: 14px 24px; border: 1px solid var(--border);
-            background: var(--tab-inactive); cursor: pointer; border-radius: 10px 10px 0 0;
-            font-weight: 600; color: var(--text); transition: 0.2s;
+            padding: 12px 18px; border: 1px solid var(--border);
+            background: var(--tab-inactive); cursor: pointer; border-radius: 8px 8px 0 0;
+            font-weight: 600; color: var(--text); font-size: 0.85rem;
         }
-        .tab-link.active { 
-            background: var(--card-bg); border-bottom: 1px solid var(--card-bg);
-            color: var(--accent); box-shadow: 0 -4px 10px var(--shadow);
-        }
+        .tab-link.active { background: var(--card-bg); border-bottom: 1px solid var(--card-bg); color: var(--accent); }
 
         .calculator-card {
-            background: var(--card-bg); padding: 35px; border-radius: 0 12px 12px 12px;
+            background: var(--card-bg); padding: 30px; border-radius: 0 12px 12px 12px;
             box-shadow: 0 10px 30px var(--shadow); border: 1px solid var(--border);
         }
 
-        .tab-content { display: none; transition: opacity 0.3s; }
+        .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Inputs & Buttons */
-        .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 25px; }
-        label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; color: var(--accent); opacity: 0.9; }
+        .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        label { display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; color: var(--accent); }
         input {
-            width: 100%; padding: 14px; border: 1px solid var(--border);
-            border-radius: 8px; font-family: inherit; font-size: 1.1rem; 
-            background: var(--bg); color: var(--text); box-sizing: border-box;
+            width: 100%; padding: 12px; border: 1px solid var(--border);
+            border-radius: 6px; background: var(--bg); color: var(--text); box-sizing: border-box;
         }
 
-        .button-group { display: flex; gap: 12px; }
+        .button-group { display: flex; gap: 10px; margin-top: 10px; }
         button.main-btn {
-            flex: 2; padding: 16px; background: var(--primary); color: white;
-            border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem;
+            flex: 2; padding: 14px; background: var(--accent); color: white;
+            border: none; border-radius: 6px; font-weight: 700; cursor: pointer;
         }
-        button.secondary-btn { background: var(--accent); }
-        button.clear-btn { flex: 1; background: transparent; border: 1px solid #e74c3c; color: #e74c3c; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        button.download-btn { flex: 1; background: var(--primary); color: var(--bg); border: none; border-radius: 6px; font-weight: 700; cursor: pointer; }
+        button.clear-btn { padding: 14px; background: transparent; border: 1px solid #e74c3c; color: #e74c3c; border-radius: 6px; cursor: pointer; }
 
-        /* Summary & Table */
         .result-summary {
-            margin-top: 25px; padding: 20px; background: var(--bg);
-            border-radius: 8px; border-left: 6px solid var(--accent); font-size: 1.2rem; font-weight: 500;
+            margin-top: 20px; padding: 15px; background: var(--bg);
+            border-radius: 6px; border-left: 5px solid var(--accent); font-weight: 500;
         }
 
-        .table-container { margin-top: 25px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
-        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        th { background: var(--primary); color: white; padding: 14px; text-align: left; }
-        td { padding: 12px 14px; border-bottom: 1px solid var(--border); }
-        tr:nth-child(even) { background: rgba(0,0,0,0.02); }
+        .table-container { margin-top: 20px; border-radius: 8px; overflow: auto; border: 1px solid var(--border); max-height: 400px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { background: var(--primary); color: var(--bg); padding: 12px; text-align: left; position: sticky; top: 0; }
+        td { padding: 10px; border-bottom: 1px solid var(--border); }
 
-        @media (max-width: 900px) {
-            .app-container { grid-template-columns: 1fr; }
-            .sidebar { grid-column: 1; margin-top: 20px; }
-        }
+        @media (max-width: 900px) { .app-container { grid-template-columns: 1fr; } .sidebar { grid-column: 1; } }
     </style>
 </head>
 <body data-theme="dark">
 
     <div class="app-container">
         <header>
-            <h1>Accounting Calculator App <span style="font-weight:300; opacity:0.6;">v1.3</span></h1>
-            <button id="theme-toggle">Toggle Theme</button>
+            <h1>Accounting Calculator App <small style="font-weight:300; opacity:0.6;">v1.4</small></h1>
+            <button id="theme-toggle">Switch Theme</button>
         </header>
 
         <div class="main-content">
@@ -153,156 +116,191 @@
                 <button class="tab-link active" onclick="openTab(event, 'loan-tab')">Amortisation</button>
                 <button class="tab-link" onclick="openTab(event, 'vat-tab')">VAT</button>
                 <button class="tab-link" onclick="openTab(event, 'margin-tab')">Margins</button>
+                <button class="tab-link" onclick="openTab(event, 'bea-tab')">Break-Even</button>
+                <button class="tab-link" onclick="openTab(event, 'ratio-tab')">Ratios</button>
             </nav>
 
             <main class="calculator-card">
                 <section id="loan-tab" class="tab-content active">
                     <div class="input-grid">
-                        <div class="input-group">
-                            <label>Principal Amount (£)</label>
-                            <input type="number" id="loan-principal" value="10000">
-                        </div>
-                        <div class="input-group">
-                            <label>Annual Interest Rate (%)</label>
-                            <input type="number" id="loan-interest" value="5.0" step="0.1">
-                        </div>
-                        <div class="input-group">
-                            <label>Loan Term (Years)</label>
-                            <input type="number" id="loan-years" value="5">
-                        </div>
+                        <div class="input-group"><label>Principal (£)</label><input type="number" id="loan-p" value="10000"></div>
+                        <div class="input-group"><label>Interest (%)</label><input type="number" id="loan-r" value="5.0" step="0.1"></div>
+                        <div class="input-group"><label>Years</label><input type="number" id="loan-y" value="5"></div>
                     </div>
                     <div class="button-group">
-                        <button id="btn-loan" class="main-btn secondary-btn">Generate Schedule</button>
-                        <button id="btn-clear-table" class="clear-btn">Hide Table</button>
+                        <button id="btn-loan" class="main-btn">Generate</button>
+                        <button id="btn-loan-csv" class="download-btn">Export CSV</button>
+                        <button id="btn-clear-table" class="clear-btn">Hide</button>
                     </div>
-                    <div class="result-summary" id="loan-result">Monthly Payment: --</div>
+                    <div class="result-summary" id="loan-result">Monthly Repayment: --</div>
                     <div class="table-container" id="table-box" style="display:none;">
-                        <table>
-                            <thead>
-                                <tr><th>Month</th><th>Interest</th><th>Principal</th><th>Balance</th></tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                        <table id="amort-table"><thead><tr><th>Month</th><th>Interest</th><th>Principal</th><th>Balance</th></tr></thead><tbody></tbody></table>
                     </div>
                 </section>
 
                 <section id="vat-tab" class="tab-content">
                     <div class="input-grid">
-                        <div class="input-group">
-                            <label>Net Amount (£)</label>
-                            <input type="number" id="vat-net" placeholder="e.g. 100.00">
-                        </div>
-                        <div class="input-group">
-                            <label>VAT Rate (%)</label>
-                            <input type="number" id="vat-rate" value="20">
-                        </div>
+                        <div class="input-group"><label>Net Amount (£)</label><input type="number" id="vat-n" placeholder="100.00"></div>
+                        <div class="input-group"><label>VAT Rate (%)</label><input type="number" id="vat-rate" value="20"></div>
                     </div>
-                    <button id="btn-vat-add" class="main-btn secondary-btn">Calculate Total Gross</button>
+                    <button id="btn-vat" class="main-btn">Calculate Total Gross</button>
                     <div class="result-summary" id="vat-result">Gross Total: --</div>
                 </section>
 
                 <section id="margin-tab" class="tab-content">
                     <div class="input-grid">
-                        <div class="input-group">
-                            <label>Cost of Goods (£)</label>
-                            <input type="number" id="margin-cost" placeholder="e.g. 50.00">
-                        </div>
-                        <div class="input-group">
-                            <label>Sales Revenue (£)</label>
-                            <input type="number" id="margin-rev" placeholder="e.g. 100.00">
-                        </div>
+                        <div class="input-group"><label>Cost (£)</label><input type="number" id="margin-c" placeholder="50.00"></div>
+                        <div class="input-group"><label>Revenue (£)</label><input type="number" id="margin-rev" placeholder="100.00"></div>
                     </div>
-                    <button id="btn-margin" class="main-btn secondary-btn">Calculate Profitability</button>
+                    <button id="btn-margin" class="main-btn">Calculate Profitability</button>
                     <div class="result-summary" id="margin-result">Margin: -- | Markup: --</div>
+                </section>
+
+                <section id="bea-tab" class="tab-content">
+                    <div class="input-grid">
+                        <div class="input-group"><label>Fixed Costs (£)</label><input type="number" id="bea-fixed" placeholder="e.g. 1000"></div>
+                        <div class="input-group"><label>Price per Unit (£)</label><input type="number" id="bea-price" placeholder="e.g. 50"></div>
+                        <div class="input-group"><label>Variable Cost per Unit (£)</label><input type="number" id="bea-var" placeholder="e.g. 30"></div>
+                    </div>
+                    <button id="btn-bea" class="main-btn">Find Break-Even Point</button>
+                    <div class="result-summary" id="bea-result">Units Required: --</div>
+                </section>
+
+                <section id="ratio-tab" class="tab-content">
+                    <div class="input-grid">
+                        <div class="input-group"><label>Current Assets (£)</label><input type="number" id="rat-ca" placeholder="Cash, Debtors..."></div>
+                        <div class="input-group"><label>Current Liabilities (£)</label><input type="number" id="rat-cl" placeholder="Creditors, Tax..."></div>
+                        <div class="input-group"><label>Inventory (£)</label><input type="number" id="rat-inv" placeholder="Stock"></div>
+                    </div>
+                    <button id="btn-ratio" class="main-btn">Analyse Liquidity</button>
+                    <div class="result-summary" id="ratio-result">Current Ratio: -- | Quick Ratio: --</div>
                 </section>
             </main>
         </div>
 
         <div class="sidebar">
             <aside class="audit-trail">
-                <div class="trail-header">
-                    <h3 style="margin:0; font-size:0.9rem;">Audit Trail</h3>
-                    <button id="btn-clear-history" style="font-size:0.7rem; padding:4px 8px; background:none; border:1px solid #e74c3c; color:#e74c3c; border-radius:4px; cursor:pointer;">Clear</button>
-                </div>
+                <div class="trail-header"><h3>Audit Trail</h3><button id="btn-clear-history">Clear</button></div>
                 <ul id="history-list"></ul>
             </aside>
         </div>
     </div>
 
     <script>
-        // --- Theme ---
-        document.getElementById('theme-toggle').addEventListener('click', () => {
-            const body = document.body;
-            body.setAttribute('data-theme', body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-        });
-
-        // --- Tabs ---
-        function openTab(evt, tabName) {
-            document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
-            document.querySelectorAll(".tab-link").forEach(l => l.classList.remove("active"));
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
-        }
-
-        // --- Logic ---
+        // --- Core Logic ---
         const Finance = {
-            vat: (n, r) => ({ tax: (n * (r/100)).toFixed(2), gross: (n * (1 + r/100)).toFixed(2) }),
-            profit: (c, r) => ({ m: (((r-c)/r)*100).toFixed(2), u: (((r-c)/c)*100).toFixed(2) }),
+            csv: (data, filename) => {
+                const csvContent = "data:text/csv;charset=utf-8," + data.map(e => e.join(",")).join("\n");
+                const link = document.createElement("a");
+                link.setAttribute("href", encodeURI(csvContent));
+                link.setAttribute("download", filename);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            },
             amort: (p, r, y) => {
                 const mR = (r/100)/12, mT = y*12;
                 const pay = (p * mR) / (1 - Math.pow(1 + mR, -mT));
                 let bal = p, sched = [];
                 for(let i=1; i<=mT; i++) {
                     const int = bal * mR, princ = pay - int; bal -= princ;
-                    sched.push({ i, int: int.toFixed(2), princ: princ.toFixed(2), bal: Math.max(0, bal).toFixed(2) });
+                    sched.push([i, int.toFixed(2), princ.toFixed(2), Math.max(0, bal).toFixed(2)]);
                 }
                 return { pay: pay.toFixed(2), sched };
             }
         };
 
+        let currentSched = [];
+
+        // --- Tabs & Theme ---
+        function openTab(e, t) {
+            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+            document.querySelectorAll(".tab-link").forEach(l => l.classList.remove("active"));
+            document.getElementById(t).classList.add("active");
+            e.currentTarget.classList.add("active");
+        }
+
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            const b = document.body;
+            b.setAttribute('data-theme', b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        });
+
         // --- Events ---
         document.addEventListener('DOMContentLoaded', () => {
-            const history = document.getElementById('history-list');
+            const hist = document.getElementById('history-list');
             const log = (m) => {
                 const li = document.createElement('li');
                 li.textContent = `[${new Date().toLocaleTimeString('en-GB')}] ${m}`;
-                history.prepend(li);
+                hist.prepend(li);
             };
 
+            // Amortisation
             document.getElementById('btn-loan').addEventListener('click', () => {
-                const p = parseFloat(document.getElementById('loan-principal').value);
-                const r = parseFloat(document.getElementById('loan-interest').value);
-                const y = parseFloat(document.getElementById('loan-years').value);
+                const p = parseFloat(document.getElementById('loan-p').value);
+                const r = parseFloat(document.getElementById('loan-r').value);
+                const y = parseFloat(document.getElementById('loan-y').value);
                 if(isNaN(p) || isNaN(r) || isNaN(y)) return;
                 const res = Finance.amort(p, r, y);
+                currentSched = res.sched;
                 document.getElementById('loan-result').innerHTML = `Monthly Repayment: <strong>£${res.pay}</strong>`;
                 document.getElementById('table-box').style.display = 'block';
-                document.querySelector('#table-box tbody').innerHTML = res.sched.map(row => 
-                    `<tr><td>${row.i}</td><td>£${row.int}</td><td>£${row.princ}</td><td>£${row.bal}</td></tr>`).join('');
+                document.querySelector('#amort-table tbody').innerHTML = res.sched.map(row => 
+                    `<tr><td>${row[0]}</td><td>£${row[1]}</td><td>£${row[2]}</td><td>£${row[3]}</td></tr>`).join('');
                 log(`Loan: £${p} Amortised`);
             });
 
-            document.getElementById('btn-clear-table').addEventListener('click', () => {
-                document.getElementById('table-box').style.display = 'none';
+            document.getElementById('btn-loan-csv').addEventListener('click', () => {
+                if(currentSched.length === 0) return alert("Generate a schedule first!");
+                const headers = [["Month", "Interest (£)", "Principal (£)", "Remaining Balance (£)"]];
+                Finance.csv([...headers, ...currentSched], "amortisation_schedule.csv");
+                log(`Exported CSV`);
             });
 
-            document.getElementById('btn-vat-add').addEventListener('click', () => {
-                const n = parseFloat(document.getElementById('vat-net').value), r = parseFloat(document.getElementById('vat-rate').value);
+            document.getElementById('btn-clear-table').addEventListener('click', () => document.getElementById('table-box').style.display = 'none');
+
+            // VAT
+            document.getElementById('btn-vat').addEventListener('click', () => {
+                const n = parseFloat(document.getElementById('vat-n').value), r = parseFloat(document.getElementById('vat-rate').value);
                 if(isNaN(n)) return;
-                const res = Finance.vat(n, r);
-                document.getElementById('vat-result').innerHTML = `Gross Total: <strong>£${res.gross}</strong>`;
-                log(`VAT: £${n} @ ${r}%`);
+                const gross = (n * (1 + r/100)).toFixed(2);
+                document.getElementById('vat-result').innerHTML = `Gross Total: <strong>£${gross}</strong>`;
+                log(`VAT: Net £${n} @ ${r}%`);
             });
 
+            // Margins
             document.getElementById('btn-margin').addEventListener('click', () => {
-                const c = parseFloat(document.getElementById('margin-cost').value), r = parseFloat(document.getElementById('margin-rev').value);
-                if(isNaN(c) || isNaN(r)) return;
-                const res = Finance.profit(c, r);
-                document.getElementById('margin-result').innerHTML = `Margin: <strong>${res.m}%</strong> | Markup: <strong>${res.u}%</strong>`;
-                log(`Profit: Cost £${c} / Sale £${r}`);
+                const c = parseFloat(document.getElementById('margin-c').value), r = parseFloat(document.getElementById('margin-rev').value);
+                if(isNaN(c) || isNaN(r) || r === 0) return;
+                const m = (((r-c)/r)*100).toFixed(2), u = (((r-c)/c)*100).toFixed(2);
+                document.getElementById('margin-result').innerHTML = `Margin: <strong>${m}%</strong> | Markup: <strong>${u}%</strong>`;
+                log(`Margin Check: £${c} Cost / £${r} Sale`);
             });
 
-            document.getElementById('btn-clear-history').addEventListener('click', () => history.innerHTML = '');
+            // Break-Even
+            document.getElementById('btn-bea').addEventListener('click', () => {
+                const f = parseFloat(document.getElementById('bea-fixed').value);
+                const p = parseFloat(document.getElementById('bea-price').value);
+                const v = parseFloat(document.getElementById('bea-var').value);
+                const contribution = p - v;
+                if(contribution <= 0) return alert("Price must be higher than Variable Cost!");
+                const bep = Math.ceil(f / contribution);
+                document.getElementById('bea-result').innerHTML = `Break-Even: <strong>${bep} Units</strong> (£${(bep * p).toLocaleString()} Turnover)`;
+                log(`BEA: Fixed £${f}, Price £${p}, Var £${v}`);
+            });
+
+            // Ratios
+            document.getElementById('btn-ratio').addEventListener('click', () => {
+                const ca = parseFloat(document.getElementById('rat-ca').value);
+                const cl = parseFloat(document.getElementById('rat-cl').value);
+                const inv = parseFloat(document.getElementById('rat-inv').value) || 0;
+                if(cl === 0 || isNaN(ca) || isNaN(cl)) return;
+                const cur = (ca / cl).toFixed(2);
+                const qui = ((ca - inv) / cl).toFixed(2);
+                document.getElementById('ratio-result').innerHTML = `Current Ratio: <strong>${cur}</strong> | Quick Ratio: <strong>${qui}</strong>`;
+                log(`Ratios: CA £${ca}, CL £${cl}`);
+            });
+
+            document.getElementById('btn-clear-history').addEventListener('click', () => hist.innerHTML = '');
         });
     </script>
 </body>
